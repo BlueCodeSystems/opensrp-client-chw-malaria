@@ -5,7 +5,7 @@ plugins {
 }
 
 allprojects { project ->
-    group = findProperty('GROUP') ?: 'org.smartregister'
+    group = findProperty('GROUP') ?: 'com.github.BlueCodeSystems'
     version = findProperty('VERSION_NAME') ?: '0.0.1-SNAPSHOT'
 
     repositories {

@@ -23,23 +23,23 @@ repositories {
 ```
 
 2) Add the dependency
-- If you consume from the upstream OpenSRP org on GitHub:
+- Default (this repository under BlueCodeSystems):
 ```
 dependencies {
-    implementation 'com.github.OpenSRP:opensrp-client-chw-malaria:2.0.0'
+    implementation 'com.github.BlueCodeSystems:opensrp-client-chw-malaria:2.0.0'
 }
 ```
-- If you consume from a fork, replace `OpenSRP` with your GitHub org/user (e.g., `com.github.BlueCodeSystems`).
+- If you consume from a different fork, replace `BlueCodeSystems` with your GitHub org/user.
 
 Alternative: local Maven (developer workflow)
 ```
 ./gradlew :opensrp-chw-malaria:publishToMavenLocal
 ```
-Then in your app/module:
+Then in your app/module (uses this project's configured group):
 ```
 repositories { mavenLocal() }
 dependencies {
-    implementation 'org.smartregister:opensrp-client-chw-malaria:2.0.0'
+    implementation 'com.github.BlueCodeSystems:opensrp-client-chw-malaria:2.0.0'
 }
 ```
 
