@@ -1,1 +1,49 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 include ':sample', ':opensrp-chw-malaria'
+
+// Prefer local sibling builds when present and explicitly enabled
+def sibling = { String path ->
+    def f = file(path)
+    return f != null && f.exists()
+}
+def useLocalSiblings = false
+def prop = gradle.startParameter?.projectProperties?.get('useLocalSiblings')
+if (prop != null) {
+    useLocalSiblings = prop.toString().toBoolean()
+} else {
+    def env = System.getenv('USE_LOCAL_SIBLINGS')
+    if (env != null) useLocalSiblings = env.toBoolean()
+}
+
+if (useLocalSiblings && sibling('../opensrp-client-core')) {
+    includeBuild('../opensrp-client-core') {
+        dependencySubstitution {
+            substitute(module('io.github.bluecodesystems:opensrp-client-core')).using(project(':opensrp-core'))
+        }
+    }
+}
+
+if (useLocalSiblings && sibling('../Opensrp-client-native-form-new')) {
+    includeBuild('../Opensrp-client-native-form-new') {
+        dependencySubstitution {
+            substitute(module('io.github.bluecodesystems:opensrp-client-native-form-new')).using(project(':android-json-form-wizard'))
+        }
+    }
+}
+
+if (useLocalSiblings && sibling('../opensrp-client-configurable-views')) {
+    includeBuild('../opensrp-client-configurable-views') {
+        dependencySubstitution {
+            substitute(module('io.github.bluecodesystems:opensrp-configurable-views')).using(project(':opensrp-configurable-views'))
+            substitute(module('com.github.BlueCodeSystems:opensrp-client-configurable-views')).using(project(':opensrp-configurable-views'))
+        }
+    }
+}

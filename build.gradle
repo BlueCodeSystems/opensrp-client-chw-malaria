@@ -1,82 +1,90 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
-        classpath 'com.android.tools.build:gradle:3.5.3'
-    }
+plugins {
+    id 'com.android.application' version '8.6.0' apply false
+    id 'com.android.library' version '8.6.0' apply false
+    id 'io.codearte.nexus-staging' version '0.30.0'
 }
 
-configure(allprojects) { project ->
-
-    version = VERSION_NAME
-    group = GROUP
-    buildscript {
-        repositories {
-            google()
-            jcenter()
-            mavenCentral()
-            maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-            mavenLocal()
-        }
-    }
-}
-
-project.ext.preDexLibs = !project.hasProperty('disablePreDex')
-
-subprojects {
-
-    group = 'org.smartregister'
-
-    ext.androidToolsBuildGradle     = '3.1.4'
-    ext.androidBuildToolsVersion    = '28.0.3'
-    ext.androidMinSdkVersion        = 18
-    ext.androidCompileSdkVersion    = 28
-    ext.androidTargetSdkVersion     = 28
-
-    ext.androidAnnotationsVersion = '3.0.1'
-    ext.androidAnnotationsAPIVersion = '3.0.1'
+allprojects { project ->
+    group = findProperty('GROUP') ?: 'org.smartregister'
+    version = findProperty('VERSION_NAME') ?: '0.0.1-SNAPSHOT'
 
     repositories {
+        // Prefer local artifacts first during development
+        mavenLocal()
         google()
-        jcenter()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven { url "https://acra.googlecode.com/svn/repository/releases" }
-        maven { url "https://repo.maven.apache.org/maven2" }
         maven { url "https://cloudant.github.io/cloudant-sync-eap/repository" }
         maven { url "https://s3.amazonaws.com/repo.commonsware.com" }
-        mavenLocal()
+        // Legacy snapshot repos (keep for backwards compatibility)
+        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 
-    // Improve build server performance by allowing disabling of pre-dexing
-    // (see http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance.)
-    project.plugins.whenPluginAdded { plugin ->
-        if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)) {
-            project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
-        } else if ("com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
-            project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
+    // Align duplicate coordinates from different groupIds (JitPack vs Maven Central)
+    configurations.all {
+        resolutionStrategy {
+            dependencySubstitution {
+                // Core: prefer Maven Central coord
+                substitute(module('com.github.BlueCodeSystems:opensrp-client-core')).using(module('io.github.bluecodesystems:opensrp-client-core:6.2.2'))
+                // P2P Sync: align on JitPack v0.4.3 for all
+                substitute(module('io.github.bluecodesystems:android-p2p-sync')).using(module('com.github.BlueCodeSystems:android-p2p-sync:v0.4.3'))
+            }
+            force 'com.commonsware.cwac:saferoom.x:1.3.0'
         }
+        // Drop legacy saferoom if pulled transitively
+        exclude group: 'com.commonsware.cwac', module: 'saferoom'
     }
 }
 
-apply plugin : 'java'
-apply plugin : 'build-dashboard'
-apply plugin: 'io.codearte.nexus-staging'
-
-buildDashboard {
-    reports.html.setDestination(file("build/"))
+// Ensure all subprojects' Test workers inherit JDK17 module opens
+subprojects { project ->
+    tasks.withType(Test).configureEach { t ->
+        // Limit parallel forks to reduce JDK17 worker oddities
+        maxParallelForks = 1
+        forkEvery = 0
+        // Mirror sibling libs' JDK17 opens for test workers
+        jvmArgs(
+                '--add-opens=java.base/java.lang=ALL-UNNAMED',
+                '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
+                '--add-opens=java.base/java.io=ALL-UNNAMED',
+                '--add-opens=java.base/java.net=ALL-UNNAMED',
+                '--add-opens=java.base/java.util=ALL-UNNAMED',
+                '--add-opens=java.base/java.text=ALL-UNNAMED',
+                '--add-opens=java.base/java.security=ALL-UNNAMED',
+                '--add-opens=java.base/jdk.internal.reflect=ALL-UNNAMED',
+                '--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED',
+                '--add-opens=java.base/jdk.internal.util=ALL-UNNAMED',
+                '--add-opens=java.base/sun.nio.ch=ALL-UNNAMED',
+                '--add-opens=java.base/sun.security.util=ALL-UNNAMED',
+                '--add-opens=java.desktop/java.awt.font=ALL-UNNAMED',
+                '--add-exports=java.base/jdk.internal.reflect=ALL-UNNAMED'
+        )
+    }
 }
 
-test.reports.html.enabled = false
-test.reports.junitXml.enabled = false
+subprojects { project ->
+    // Provide legacy ext values for modules still referencing them
+    ext.androidBuildToolsVersion    = '35.0.0'
+    // Raise to 28 to satisfy transitive deps (e.g., configurable-views)
+    ext.androidMinSdkVersion        = 28
+    ext.androidCompileSdkVersion    = 35
+    ext.androidTargetSdkVersion     = 35
+}
 
+// Ensure Java compilation forks with sufficient heap to avoid OOM
+allprojects {
+    tasks.withType(JavaCompile).configureEach { t ->
+        options.fork = true
+        options.forkOptions.memoryMaximumSize = '2048m'
+    }
+}
+
+nexusStaging {
+    serverUrl = "https://s01.oss.sonatype.org/service/local/"
+    // username/password supplied via -PsonatypeUsername/-PsonatypePassword or gradle.properties
+}
 
 def isReleaseBuild() {
-    return version.contains("SNAPSHOT") == false
+    return !(version?.toString()?.contains('SNAPSHOT'))
 }
