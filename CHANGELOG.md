@@ -22,3 +22,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Gradle/JVM args updated for JDK 17 module opens across test workers.
 - JitPack CI improved by installing `platform-tools` and ensuring the Gradle wrapper is executable; artifacts are published to `~/.m2` via `publishToMavenLocal`.
 
+[Release tag]
+- https://github.com/BlueCodeSystems/opensrp-client-chw-malaria/releases/tag/v2.0.0
