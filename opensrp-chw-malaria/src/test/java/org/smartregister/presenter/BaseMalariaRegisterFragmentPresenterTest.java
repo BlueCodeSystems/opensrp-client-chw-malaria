@@ -26,7 +26,7 @@ public class BaseMalariaRegisterFragmentPresenterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         baseMalariaRegisterFragmentPresenter = new BaseMalariaRegisterFragmentPresenter(view, model, "");
     }

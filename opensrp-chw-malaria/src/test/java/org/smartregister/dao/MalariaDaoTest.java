@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.smartregister.chw.malaria.dao.MalariaDao;
 import org.smartregister.repository.Repository;
@@ -24,7 +23,6 @@ public class MalariaDaoTest extends MalariaDao {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         setRepository(repository);
     }
 
@@ -43,4 +41,3 @@ public class MalariaDaoTest extends MalariaDao {
         Assert.assertFalse(registered);
     }
 }
-

@@ -7,12 +7,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
+import java.lang.reflect.Method;
 import org.smartregister.chw.malaria.contract.MalariaRegisterContract;
 import org.smartregister.chw.malaria.presenter.BaseMalariaRegisterPresenter;
 
-@PrepareForTest(BaseMalariaRegisterPresenter.class)
 public class BaseMalariaRegisterPresenterTest {
     @Mock
     protected BaseMalariaRegisterPresenter baseMalariaRegisterPresenter;
@@ -27,7 +25,7 @@ public class BaseMalariaRegisterPresenterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         presenter = new BaseMalariaRegisterPresenter(baseView, model, interactor);
     }
 
@@ -54,7 +52,9 @@ public class BaseMalariaRegisterPresenterTest {
 
     @Test
     public void getViewWhenViewIsNull() throws Exception {
-        Assert.assertNull(Whitebox.invokeMethod(baseMalariaRegisterPresenter, "getView"));
+        Method m = BaseMalariaRegisterPresenter.class.getDeclaredMethod("getView");
+        m.setAccessible(true);
+        Assert.assertNull(m.invoke(baseMalariaRegisterPresenter));
     }
 
     @Test

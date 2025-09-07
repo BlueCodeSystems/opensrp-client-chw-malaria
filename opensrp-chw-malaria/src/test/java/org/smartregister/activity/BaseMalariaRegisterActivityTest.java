@@ -3,17 +3,32 @@ package org.smartregister.activity;
 import android.content.Intent;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.powermock.reflect.Whitebox;
+import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+import java.lang.reflect.Method;
 import org.smartregister.chw.malaria.activity.BaseMalariaRegisterActivity;
 
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk = 28)
 public class BaseMalariaRegisterActivityTest {
-    @Mock
-    public Intent data;
-    @Mock
-    private BaseMalariaRegisterActivity baseMalariaRegisterActivity = new BaseMalariaRegisterActivity();
+
+    @Mock public Intent data;
+
+    private BaseMalariaRegisterActivity baseMalariaRegisterActivity;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        // Build the Activity instance without triggering onCreate to avoid CoreLibrary init
+        baseMalariaRegisterActivity = Robolectric.buildActivity(BaseMalariaRegisterActivity.class).get();
+    }
 
     @Test
     public void assertNotNull() {
@@ -32,8 +47,9 @@ public class BaseMalariaRegisterActivityTest {
 
     @Test(expected = Exception.class)
     public void onActivityResult() throws Exception {
-        Whitebox.invokeMethod(baseMalariaRegisterActivity, "onActivityResult", 2244, -1, data);
+        Method m = BaseMalariaRegisterActivity.class.getDeclaredMethod("onActivityResult", int.class, int.class, android.content.Intent.class);
+        m.setAccessible(true);
+        m.invoke(baseMalariaRegisterActivity, 2244, -1, data);
         Mockito.verify(baseMalariaRegisterActivity.presenter()).saveForm(null);
     }
-
 }

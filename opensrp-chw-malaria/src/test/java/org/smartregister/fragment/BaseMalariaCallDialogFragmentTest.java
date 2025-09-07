@@ -11,13 +11,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import org.smartregister.chw.malaria.domain.MemberObject;
 import org.smartregister.chw.malaria.fragment.BaseMalariaCallDialogFragment;
 
-@PrepareForTest(BaseMalariaCallDialogFragment.class)
 public class BaseMalariaCallDialogFragmentTest {
     @Spy
     public BaseMalariaCallDialogFragment baseMalariaCallDialogFragment;
@@ -32,9 +30,11 @@ public class BaseMalariaCallDialogFragmentTest {
     public MemberObject memberObject;
 
     @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        Whitebox.setInternalState(BaseMalariaCallDialogFragment.class, "MEMBER_OBJECT", memberObject);
+    public void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
+        Field f = BaseMalariaCallDialogFragment.class.getDeclaredField("MEMBER_OBJECT");
+        f.setAccessible(true);
+        f.set(null, memberObject);
     }
 
     @Test(expected = Exception.class)
@@ -46,7 +46,9 @@ public class BaseMalariaCallDialogFragmentTest {
 
         Mockito.when(viewGroup.findViewById(view.getId())).thenReturn(textView);
 
-        Whitebox.invokeMethod(baseMalariaCallDialogFragment, "setCallTitle", viewGroup, view.getId(), "message");
+        Method m = BaseMalariaCallDialogFragment.class.getDeclaredMethod("setCallTitle", android.view.ViewGroup.class, int.class, String.class);
+        m.setAccessible(true);
+        m.invoke(baseMalariaCallDialogFragment, viewGroup, view.getId(), "message");
         Assert.assertEquals("message Head of family", textView.getText());
     }
 
@@ -58,7 +60,9 @@ public class BaseMalariaCallDialogFragmentTest {
 
         Mockito.when(viewGroup.findViewById(view.getId())).thenReturn(textView);
 
-        Whitebox.invokeMethod(baseMalariaCallDialogFragment, "setCallTitle", viewGroup, view.getId(), "message");
+        Method m = BaseMalariaCallDialogFragment.class.getDeclaredMethod("setCallTitle", android.view.ViewGroup.class, int.class, String.class);
+        m.setAccessible(true);
+        m.invoke(baseMalariaCallDialogFragment, viewGroup, view.getId(), "message");
         Assert.assertEquals("message ANC Client", textView.getText());
     }
 
@@ -71,7 +75,9 @@ public class BaseMalariaCallDialogFragmentTest {
 
         Mockito.when(viewGroup.findViewById(view.getId())).thenReturn(textView);
 
-        Whitebox.invokeMethod(baseMalariaCallDialogFragment, "setCallTitle", viewGroup, view.getId(), "message");
+        Method m = BaseMalariaCallDialogFragment.class.getDeclaredMethod("setCallTitle", android.view.ViewGroup.class, int.class, String.class);
+        m.setAccessible(true);
+        m.invoke(baseMalariaCallDialogFragment, viewGroup, view.getId(), "message");
         Assert.assertEquals("message Primary Caregiver", textView.getText());
     }
 
@@ -83,7 +89,9 @@ public class BaseMalariaCallDialogFragmentTest {
 
         Mockito.when(viewGroup.findViewById(view.getId())).thenReturn(textView);
 
-        Whitebox.invokeMethod(baseMalariaCallDialogFragment, "setCallTitle", viewGroup, view.getId(), "message");
+        Method m = BaseMalariaCallDialogFragment.class.getDeclaredMethod("setCallTitle", android.view.ViewGroup.class, int.class, String.class);
+        m.setAccessible(true);
+        m.invoke(baseMalariaCallDialogFragment, viewGroup, view.getId(), "message");
         Assert.assertEquals("message PNC Client", textView.getText());
     }
 
@@ -96,15 +104,18 @@ public class BaseMalariaCallDialogFragmentTest {
 
         Mockito.when(viewGroup.findViewById(view.getId())).thenReturn(textView);
 
-        Whitebox.invokeMethod(baseMalariaCallDialogFragment, "setCallTitle", viewGroup, view.getId(), "message");
+        Method m = BaseMalariaCallDialogFragment.class.getDeclaredMethod("setCallTitle", android.view.ViewGroup.class, int.class, String.class);
+        m.setAccessible(true);
+        m.invoke(baseMalariaCallDialogFragment, viewGroup, view.getId(), "message");
         Assert.assertEquals("message Malaria Client", textView.getText());
     }
 
     @Test(expected = Exception.class)
     public void initUI() throws Exception {
         Mockito.when(memberObject.getPhoneNumber()).thenReturn("123456789");
-        Whitebox.invokeMethod(baseMalariaCallDialogFragment, "initUI", viewGroup);
-        PowerMockito.verifyPrivate(baseMalariaCallDialogFragment).invoke("setCallTitle", viewGroup, view.getId(), "message");
+        Method m = BaseMalariaCallDialogFragment.class.getDeclaredMethod("initUI", android.view.ViewGroup.class);
+        m.setAccessible(true);
+        m.invoke(baseMalariaCallDialogFragment, viewGroup);
 
     }
 }

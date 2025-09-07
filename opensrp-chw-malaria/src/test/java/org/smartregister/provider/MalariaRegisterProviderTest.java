@@ -11,9 +11,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.stubbing.answers.DoesNothing;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.reflect.Whitebox;
+import java.lang.reflect.Method;
 import org.smartregister.chw.malaria.util.DBConstants;
 import org.smartregister.commonregistry.CommonPersonObjectClient;
 import org.smartregister.malaria.R;
@@ -35,7 +33,7 @@ public class MalariaRegisterProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @After
@@ -82,7 +80,9 @@ public class MalariaRegisterProviderTest {
         map.put("is_anc_closed", "0");
         Mockito.when(activity.getResources()).thenReturn(resources);
         Mockito.when(commonPersonObjectClient.getColumnmaps()).thenReturn(map);
-        Assert.assertEquals(resources.getString(R.string.anc_string), Whitebox.invokeMethod(provider, "updateMemberGender", commonPersonObjectClient));
+        Method m = MalariaRegisterProvider.class.getDeclaredMethod("updateMemberGender", org.smartregister.commonregistry.CommonPersonObjectClient.class);
+        m.setAccessible(true);
+        Assert.assertEquals(resources.getString(R.string.anc_string), m.invoke(provider, commonPersonObjectClient));
     }
 
     @Test
@@ -94,7 +94,9 @@ public class MalariaRegisterProviderTest {
         map.put("is_pnc_closed", "0");
         Mockito.when(activity.getResources()).thenReturn(resources);
         Mockito.when(commonPersonObjectClient.getColumnmaps()).thenReturn(map);
-        Assert.assertEquals(resources.getString(R.string.pnc_string), Whitebox.invokeMethod(provider, "updateMemberGender", commonPersonObjectClient));
+        Method m = MalariaRegisterProvider.class.getDeclaredMethod("updateMemberGender", org.smartregister.commonregistry.CommonPersonObjectClient.class);
+        m.setAccessible(true);
+        Assert.assertEquals(resources.getString(R.string.pnc_string), m.invoke(provider, commonPersonObjectClient));
     }
 
     @Test
@@ -107,15 +109,18 @@ public class MalariaRegisterProviderTest {
 
         Mockito.when(activity.getResources()).thenReturn(resources);
         Mockito.when(commonPersonObjectClient.getColumnmaps()).thenReturn(map);
-        Assert.assertEquals(resources.getString(R.string.male), Whitebox.invokeMethod(provider, "updateMemberGender", commonPersonObjectClient));
+        Method m = MalariaRegisterProvider.class.getDeclaredMethod("updateMemberGender", org.smartregister.commonregistry.CommonPersonObjectClient.class);
+        m.setAccessible(true);
+        Assert.assertEquals(resources.getString(R.string.male), m.invoke(provider, commonPersonObjectClient));
     }
 
 
-    @Test(expected = Exception.class)
-    public void getView() throws Exception {
-        malariaRegisterProvider.getView(null, null, viewHolder);
-        PowerMockito.when(malariaRegisterProvider, "populatePatientColumn", commonPersonObjectClient, viewHolder).then(DoesNothing.doesNothing());
-        PowerMockito.verifyPrivate(malariaRegisterProvider).invoke("populatePatientColumn", commonPersonObjectClient, viewHolder);
+    @Test
+    public void getViewCallsPopulatePatientColumnWhenVisibleColumnsEmpty() {
+        Activity activity = Mockito.mock(Activity.class);
+        MalariaRegisterProvider provider = Mockito.spy(new MalariaRegisterProvider(activity, listener, listener, new java.util.HashSet<>()));
+        provider.getView(null, commonPersonObjectClient, viewHolder);
+        Mockito.verify(provider).populatePatientColumn(commonPersonObjectClient, viewHolder);
     }
 
 }
