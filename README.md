@@ -1,5 +1,8 @@
 # OpenSRP Client CHW Malaria
 
+[![JitPack Latest](https://jitpack.io/v/BlueCodeSystems/opensrp-client-chw-malaria.svg)](https://jitpack.io/#BlueCodeSystems/opensrp-client-chw-malaria)
+[![Build for latest tag (v2.0.0)](https://jitpack.io/v/BlueCodeSystems/opensrp-client-chw-malaria/v2.0.0.svg)](https://jitpack.io/#BlueCodeSystems/opensrp-client-chw-malaria/v2.0.0)
+
 Android library providing CHW malaria features for OpenSRP-based apps.
 
 Version 2.x highlights
