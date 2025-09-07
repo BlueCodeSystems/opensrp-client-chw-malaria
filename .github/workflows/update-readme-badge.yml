@@ -1,0 +1,72 @@
+name: Update README badges on new tag
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine tag
+        id: vars
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          # Badge uses a 'v' prefix; ensure it's present for badge/link text
+          if [[ "$TAG" != v* ]]; then
+            BADGE_TAG="v$TAG"
+          else
+            BADGE_TAG="$TAG"
+          fi
+          # Plain version for dependency coordinates (strip leading 'v' if present)
+          PLAIN_TAG="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "badge_tag=$BADGE_TAG" >> "$GITHUB_OUTPUT"
+          echo "plain_tag=$PLAIN_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Update README badges and dependency version
+        shell: bash
+        run: |
+          set -euo pipefail
+          BADGE_TAG='${{ steps.vars.outputs.badge_tag }}'
+          PLAIN_TAG='${{ steps.vars.outputs.plain_tag }}'
+          file=README.md
+          if [[ -f "$file" ]]; then
+            # Update explicit tag badge (both image .svg and target link segment)
+            sed -i.bak -E "s#(opensrp-client-chw-malaria/)(v[0-9]+\.[0-9]+\.[0-9]+)(\.svg)#\1${BADGE_TAG}\3#g" "$file"
+            sed -i.bak -E "s#(opensrp-client-chw-malaria/)(v[0-9]+\.[0-9]+\.[0-9]+)(\))#\1${BADGE_TAG}\3#g" "$file"
+            # Update human-readable alt text '(vX.Y.Z)'
+            sed -i.bak -E "s#\(v[0-9]+\.[0-9]+\.[0-9]+\)#(${BADGE_TAG})#g" "$file"
+            # Update dependency coordinates in README
+            sed -i.bak -E "s#(com\\.github\\.BlueCodeSystems:opensrp-client-chw-malaria:)\d+\\.\d+\\.\d+#\1${PLAIN_TAG}#g" "$file"
+            rm -f "$file.bak"
+          fi
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs(readme): update JitPack tag badge and version for ${{ steps.vars.outputs.badge_tag }}"
+          git push
+
