@@ -1,6 +1,61 @@
-[![Build Status](https://travis-ci.org/OpenSRP/opensrp-client-chw-malaria.svg?branch=master)](https://travis-ci.org/OpenSRP/opensrp-client-chw-malaria) [![Coverage Status](https://coveralls.io/repos/github/OpenSRP/opensrp-client-chw-malaria/badge.svg?branch=master)](https://coveralls.io/github/OpenSRP/opensrp-client-chw-malaria?branch=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b8b5e3c6e9284bffb993d07b235a8691)](https://www.codacy.com/app/OpenSRP/opensrp-client-chw-malaria?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OpenSRP/opensrp-client-chw-malaria&amp;utm_campaign=Badge_Grade)
+# OpenSRP Client CHW Malaria
 
-# opensrp-client-chw-malaria
-OpenSRP client chw malaria module library
+Android library providing CHW malaria features for OpenSRP-based apps.
 
+Version 2.x highlights
+- AndroidX-only (migrated from legacy support libs).
+- Requires JDK 17, Gradle 8.7, AGP 8.6.
+- compileSdk/targetSdk 35; minSdk 28.
+
+Requirements
+- JDK 17
+- Android Gradle Plugin 8.6 (via project Gradle wrapper 8.7)
+- Android SDK 35 and Build Tools 35.0.0
+- AndroidX enabled in consuming apps (`android.useAndroidX=true`, `android.enableJetifier=true` if migrating)
+
+Getting started
+1) Add the repository
+- JitPack (recommended for tagged releases):
+```
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+```
+
+2) Add the dependency
+- If you consume from the upstream OpenSRP org on GitHub:
+```
+dependencies {
+    implementation 'com.github.OpenSRP:opensrp-client-chw-malaria:2.0.0'
+}
+```
+- If you consume from a fork, replace `OpenSRP` with your GitHub org/user (e.g., `com.github.BlueCodeSystems`).
+
+Alternative: local Maven (developer workflow)
+```
+./gradlew :opensrp-chw-malaria:publishToMavenLocal
+```
+Then in your app/module:
+```
+repositories { mavenLocal() }
+dependencies {
+    implementation 'org.smartregister:opensrp-client-chw-malaria:2.0.0'
+}
+```
+
+Test and build
+- Unit tests: `./gradlew :opensrp-chw-malaria:testDebugUnitTest`
+  - Robolectric is configured; a test `Application` initializes CoreLibrary for tests that call `onCreate()`.
+- Lint: `./gradlew :opensrp-chw-malaria:lint`
+- Sample app: `./gradlew :sample:assembleDebug`
+
+Migration notes (1.x → 2.x)
+- AndroidX is required. Ensure `android.useAndroidX=true` and migrate imports.
+- minSdk is now 28 to align with transitive dependencies and AGP requirements.
+- Build with JDK 17 and recent Android Studio (or the included Gradle wrapper).
+
+Releases
+- See CHANGELOG.md for changes. Tags use the form `vX.Y.Z`.
+
+License
+- Apache-2.0. See LICENSE file.
