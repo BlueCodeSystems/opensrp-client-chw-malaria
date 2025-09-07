@@ -2,7 +2,7 @@ package org.smartregister.provider;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +69,8 @@ public class MalariaRegisterProvider implements RecyclerViewProvider<MalariaRegi
         }
     }
 
-    private void populatePatientColumn(CommonPersonObjectClient pc, final RegisterViewHolder viewHolder) {
+    // Package-private for test visibility; was private
+    void populatePatientColumn(CommonPersonObjectClient pc, final RegisterViewHolder viewHolder) {
         try {
 
             String firstName = getName(

@@ -6,7 +6,8 @@ import org.smartregister.Context;
 import org.smartregister.CoreLibrary;
 import org.smartregister.commonregistry.CommonFtsObject;
 import org.smartregister.configurableviews.ConfigurableViewsLibrary;
-import org.smartregister.malaria.BuildConfig;
+// Use the sample app's BuildConfig (distinct applicationId)
+import org.smartregister.malaria.sample.BuildConfig;
 import org.smartregister.chw.malaria.MalariaLibrary;
 import org.smartregister.repository.SampleRepository;
 import org.smartregister.chw.malaria.util.DBConstants;
@@ -44,8 +45,8 @@ public class SampleApplication extends DrishtiApplication {
         //Auto login by default
         String password = "pwd";
         context.session().start(context.session().lengthInMilliseconds());
-        context.configuration().getDrishtiApplication().setPassword(password);
-        context.session().setPassword(password);
+        context.configuration().getDrishtiApplication().setPassword(password.getBytes());
+        context.session().setPassword(password.getBytes());
 
     }
 

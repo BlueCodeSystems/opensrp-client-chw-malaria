@@ -47,7 +47,7 @@ public class BaseMalariaRegisterFragment extends BaseRegisterFragment implements
 
         if (getSearchView() != null) {
             getSearchView().setBackgroundResource(R.color.white);
-            getSearchView().setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_search, 0, 0, 0);
+            getSearchView().setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_search, 0, 0, 0);
         }
 
         // Update sort filter
@@ -62,7 +62,7 @@ public class BaseMalariaRegisterFragment extends BaseRegisterFragment implements
             logo.setVisibility(android.view.View.GONE);
         }
 
-        CustomFontTextView titleView = view.findViewById(R.id.txt_title_label);
+        CustomFontTextView titleView = view.findViewById(org.smartregister.R.id.txt_title_label);
         if (titleView != null) {
             titleView.setVisibility(android.view.View.VISIBLE);
             titleView.setText(getString(R.string.malaria));

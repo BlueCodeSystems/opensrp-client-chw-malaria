@@ -3,12 +3,13 @@ package org.smartregister.chw.malaria.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.MenuRes;
-import android.support.design.bottomnavigation.LabelVisibilityMode;
-import android.support.v4.app.Fragment;
+import androidx.annotation.MenuRes;
+import com.google.android.material.bottomnavigation.LabelVisibilityMode;
+import androidx.fragment.app.Fragment;
 
 import com.vijay.jsonwizard.constants.JsonFormConstants;
 import com.vijay.jsonwizard.domain.Form;
+// Removed explicit Form dependency to avoid type conflicts across versions
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,13 +62,13 @@ public class BaseMalariaRegisterActivity extends BaseRegisterActivity implements
      */
     protected void onStartActivityWithAction() {
         if (FORM_NAME != null && ACTION != null) {
-            startFormActivity(FORM_NAME, BASE_ENTITY_ID, null);
+            startFormActivity(FORM_NAME, BASE_ENTITY_ID, (String) null);
         }
     }
 
     @Override
     public void startRegistration() {
-        startFormActivity(FORM_NAME, null, null);
+        startFormActivity(FORM_NAME, null, (String) null);
     }
 
     @Override
@@ -87,16 +88,27 @@ public class BaseMalariaRegisterActivity extends BaseRegisterActivity implements
     public void startFormActivity(JSONObject jsonForm) {
         Intent intent = new Intent(this, BaseMalariaRegisterActivity.class);
         intent.putExtra(Constants.JSON_FORM_EXTRA.JSON, jsonForm.toString());
-
-        if (getFormConfig() != null) {
-            intent.putExtra(JsonFormConstants.JSON_FORM_KEY.FORM, getFormConfig());
-        }
         startActivityForResult(intent, Constants.REQUEST_CODE_GET_JSON);
     }
 
     @Override
     public Form getFormConfig() {
         return null;
+    }
+
+    // Implement abstract method from BaseRegisterActivity using Map signature
+    @Override
+    public void startFormActivity(String formName, String entityId, java.util.Map<String, String> metaData) {
+        try {
+            if (mBaseFragment instanceof BaseMalariaRegisterFragment) {
+                String locationId = Context.getInstance().allSharedPreferences().getPreference(AllConstants.CURRENT_LOCATION_ID);
+                // Meta is not used downstream for this module; pass null for metadata string
+                presenter().startForm(formName, entityId, null, locationId);
+            }
+        } catch (Exception e) {
+            Timber.e(e);
+            displayToast(getString(R.string.error_unable_to_start_form));
+        }
     }
 
     @Override

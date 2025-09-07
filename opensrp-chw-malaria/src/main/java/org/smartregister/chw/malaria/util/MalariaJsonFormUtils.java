@@ -104,7 +104,7 @@ public class MalariaJsonFormUtils extends org.smartregister.util.JsonFormUtils {
         event.setClientDatabaseVersion(MalariaLibrary.getInstance().getDatabaseVersion());
     }
 
-    private static String locationId(AllSharedPreferences allSharedPreferences) {
+    protected static String locationId(AllSharedPreferences allSharedPreferences) {
         String providerId = allSharedPreferences.fetchRegisteredANM();
         String userLocationId = allSharedPreferences.fetchUserLocalityId(providerId);
         if (StringUtils.isBlank(userLocationId)) {

@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -168,9 +168,7 @@ public class BaseMalariaProfileActivity extends BaseProfileActivity implements M
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        if (id == R.id.title_layout) {
-            onBackPressed();
-        } else if (id == R.id.rlLastVisit) {
+        if (id == R.id.rlLastVisit) {
             this.openMedicalHistory();
         } else if (id == R.id.rlUpcomingServices) {
             this.openUpcomingService();

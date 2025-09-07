@@ -1,9 +1,9 @@
 package org.smartregister.chw.malaria.fragment;
 
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -28,10 +28,10 @@ public class BaseMalariaCallDialogFragment extends DialogFragment implements Bas
     private static MemberObject MEMBER_OBJECT;
     private View.OnClickListener listener = null;
 
-    public static BaseMalariaCallDialogFragment launchDialog(Activity activity, MemberObject MO) {
+    public static BaseMalariaCallDialogFragment launchDialog(androidx.fragment.app.FragmentActivity activity, MemberObject MO) {
         BaseMalariaCallDialogFragment dialogFragment = BaseMalariaCallDialogFragment.newInstance();
-        FragmentTransaction ft = activity.getFragmentManager().beginTransaction();
-        Fragment prev = activity.getFragmentManager().findFragmentByTag(DIALOG_TAG);
+        FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+        Fragment prev = activity.getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
         MEMBER_OBJECT = MO;
         if (prev != null) {
             ft.remove(prev);

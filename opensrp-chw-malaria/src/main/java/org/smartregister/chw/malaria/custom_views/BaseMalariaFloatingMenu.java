@@ -1,8 +1,8 @@
 package org.smartregister.chw.malaria.custom_views;
 
-import android.app.Activity;
+import androidx.fragment.app.FragmentActivity;
 import android.content.Context;
-import android.support.design.widget.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -29,10 +29,10 @@ public class BaseMalariaFloatingMenu extends LinearLayout implements View.OnClic
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.malaria_fab) {
-            Activity activity = (Activity) getContext();
+            FragmentActivity activity = (FragmentActivity) getContext();
             BaseMalariaCallDialogFragment.launchDialog(activity, MEMBER_OBJECT);
         }  else if (view.getId() == R.id.refer_to_facility_layout) {
-            Activity activity = (Activity) getContext();
+            FragmentActivity activity = (FragmentActivity) getContext();
             BaseMalariaCallDialogFragment.launchDialog(activity, MEMBER_OBJECT);
         }
     }

@@ -6,7 +6,6 @@ import org.smartregister.repository.Repository;
 import org.smartregister.sync.ClientProcessorForJava;
 import org.smartregister.sync.helper.ECSyncHelper;
 
-import id.zelory.compressor.Compressor;
 
 public class MalariaLibrary {
     private static MalariaLibrary instance;
@@ -19,7 +18,6 @@ public class MalariaLibrary {
     private ECSyncHelper syncHelper;
 
     private ClientProcessorForJava clientProcessorForJava;
-    private Compressor compressor;
 
     public static void init(Context context, Repository repository, int applicationVersion, int databaseVersion) {
         if (instance == null) {
